@@ -11,7 +11,7 @@ flowchart LR
   subgraph Client
     B[Browser / installed PWA]
   end
-  subgraph VPS["VPS — Docker Compose (no custom Dockerfiles)"]
+  subgraph VPS["VPS — Docker Compose"]
     RP[Reverse proxy + HTTPS<br/>official image, e.g. Caddy/Traefik — Phase 1 choice]
     APP[Nuxt 4 app<br/>Vue 3 SSR + Nitro API]
     PG[(PostgreSQL<br/>data + MVP search)]
@@ -75,4 +75,4 @@ Ports: `SmsProvider` (send OTP), `PushProvider` (web-push dispatch), `EmailProvi
 
 ## 7. Deployment model (summary; detail in OPERATIONS)
 
-Docker Compose with official images pinned by digest. App-image strategy (Phase 0.1, ADR-0018): CI assembles a Dockerfile-less OCI image (`crane append` of the Nitro `.output` onto the official Node 24 image) referenced **by digest** in production; Option B (verified tarball + bind mount) is the documented fallback and Option C (custom Dockerfile) requires founder-approved supersession. Persistent volumes for PostgreSQL and MinIO, reverse proxy with HTTPS, documented backup/restore. Environments: local dev, (optional) staging, production — same Compose topology; bind mounts exist only in dev.
+Docker Compose with official base images pinned by digest. App-image strategy (ADR-0018, founder-approved Phase 0.2): a **conventional multi-stage Dockerfile is the default candidate**, and the built image is referenced **by digest** in production. The Dockerfile-less OCI assembly is retained only as an alternative that must pass the same experiment (E-1) criteria with equal-or-lower complexity; a verified-tarball bind mount remains the last-resort fallback. Persistent volumes for PostgreSQL and MinIO, reverse proxy with HTTPS, documented backup/restore. Environments: local dev, (optional) staging, production — same Compose topology; bind mounts exist only in dev.

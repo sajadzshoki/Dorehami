@@ -21,5 +21,5 @@ Status key: **Proposed** = recommended, needs the validation stated in the ADR; 
 | [0015](ADR-0015-provider-adapters.md) | Provider adapter ports (SMS first: Kavenegar) | Accepted (brief pattern), Proposed (interfaces) |
 | [0016](ADR-0016-audit-logging-privacy.md) | Append-only audit log, minimal-data logging | Proposed |
 | [0017](ADR-0017-testing-strategy.md) | Layered testing: unit/integration/e2e/concurrency/security | Proposed |
-| [0018](ADR-0018-docker-compose-no-custom-dockerfiles.md) | Docker Compose, official pinned images, no custom Dockerfiles | Accepted (brief constraint), with open app-image question |
+| [0018](ADR-0018-docker-compose-no-custom-dockerfiles.md) | Docker Compose deployment and application-image strategy | **Accepted — founder D-01 (Phase 0.2): Option C (standard Dockerfile) approved; no-Dockerfile constraint lifted; final workflow confirmed by Phase 1 experiment E-1** |
 | [0019](ADR-0019-brand-configuration.md) | Centralized brand config & design tokens | Accepted (brief requirement) |

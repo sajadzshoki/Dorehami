@@ -19,7 +19,7 @@ Names and behavior only — **no real values anywhere in this repository**. A `.
 | `AUDIT/LOG_LEVEL` (`LOG_LEVEL`) | Log verbosity | no | low | default `info`; `debug` forbidden in production |
 | `DEFAULT_LOCALE` | Entry-locale default (D-09) | no | low | `fa` default |
 | `DEFAULT_TIMEZONE` | Fallback display timezone | no | low | `Asia/Tehran` default |
-| `APP_IMAGE_DIGEST` | Digest of the assembled production app image (ADR-0018 Option A); deploys pin by digest, never a floating tag | prod: yes | low | deploy tooling refuses to proceed (T-24) |
+| `APP_IMAGE_DIGEST` | Digest of the production app image built by the ADR-0018 selected workflow (standard Dockerfile by default, Option C); deploys pin by digest, never a floating tag | prod: yes | low | deploy tooling refuses to proceed (T-24) |
 | `REGISTRY` / registry credentials | Where CI pushes and the VPS pulls the app image (e.g. GHCR) | prod CI/deploy: yes | credentials **secret** | build/deploy fails explicitly; no fallback to local unpinned builds |
 
 Rules: secrets via env or Docker secret files outside Git; never in Compose files committed with real values, never in images, never logged; rotation = update env + restart + (for `SESSION_SECRET`) forced session invalidation (all users re-login — accepted, documented consequence); CI scans for accidental secrets (T-19).

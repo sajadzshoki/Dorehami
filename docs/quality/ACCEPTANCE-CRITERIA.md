@@ -39,7 +39,7 @@ Measurable criteria verified in Phase 8 (many land with their feature phase). A 
 24. No fabricated data in production paths: with SMS unconfigured, OTP request returns an honest error (never success).
 
 ## Phase 0.1 additions — packaging, authorization & event edge cases (AC-AUDIT)
-25. **Dockerfile-less packaging spike (Phase 1):** the ADR-0018 Option A pipeline builds `.output`, assembles the image on the digest-pinned official Node image, runs it via Compose, executes one migration with the same image, and rolls back by digest. No `Dockerfile` exists in the repo. If the spike fails, Option B is recorded in ADR-0018 instead — silently adding a Dockerfile fails this criterion.
+25. **Application-image workflow (Phase 1, amended Phase 0.2):** the ADR-0018 selected workflow — a conventional Dockerfile by founder-approved default (D-01/Option C), or the Dockerfile-less assembly only if experiment E-1 proves it against the identical criteria — builds the app, runs it via Compose, executes one migration with the same image, and rolls back by digest. *(Superseded Phase 0.1 wording required “no Dockerfile”; founder decision D-01 lifted that constraint, so the presence of a reviewed Dockerfile is no longer a failure — an **unrecorded** workflow choice is.)* Evidence is recorded in ADR-0018; see AC-P1 7–8.
 26. **Migration failure drill (Phase 1):** apply-from-empty, apply-over-previous, an induced mid-deploy migration failure (old app still serves, deploy halts), and restore-from-backup all demonstrated on a throwaway stack.
 27. **Permission matrix conformance:** every DOMAIN-MODEL §11 cell is covered by an automated test, including: community managers get no rights over a linked event they don't organize; admins cannot register on behalf of users or bulk-export attendees; organizers never receive phone numbers.
 28. **Attendee privacy:** anonymous responses contain counts only; `public` visibility still requires authentication; suspended users' existing sessions stop working immediately (test).
@@ -48,6 +48,24 @@ Measurable criteria verified in Phase 8 (many land with their feature phase). A 
 31. **Suspension/deletion semantics:** organizer suspension blocks management without auto-cancelling events; community archival converts linked events to standalone under their organizer; account deletion releases the phone for re-registration only after anonymization completes.
 32. **Blocking (if D-05 approved):** a blocked user cannot initiate or send; the failure reveals nothing about the block; unblocking restores messaging; report remains available throughout.
 33. **Lost-update protection:** two concurrent organizer edits to one occurrence yield one success and one `REVISION_CONFLICT` — never a silent overwrite.
+
+## Phase 1 foundation acceptance (AC-P1) — measurable; none may be marked passed before it is tested
+
+Status at Phase 0.2: **all AC-P1 items are untested** (no implementation exists). Phase 1's exit report must classify each as *Verified & passing / Implemented but not verified / Blocked by external resources / Deferred with explicit reason* (IMPLEMENTATION-PLAN Phase 1 exit gate).
+
+1. **Fresh-checkout setup:** a clean clone is configured and running (dev dependencies + app) using only the documented steps, with no undocumented manual actions; divergences are corrected in the docs within Phase 1.
+2. **Secrets hygiene:** secret scanning over the repo **and** the built image layers passes; no real credentials in repo or image; production boot with a required variable missing fails naming the variable (never its value); production mode with a mock provider selected is rejected.
+3. **Pinned dependencies:** every direct dependency is version-pinned, the lockfile is committed, and a frozen install from the lockfile succeeds on a clean machine/CI run; Node/Nuxt/TypeScript/pnpm/PostgreSQL/Drizzle/Nuxt UI versions match the matrix recorded in ADR-0001/0003.
+4. **Type & lint:** TypeScript strict type checking and the configured linter pass with zero errors on a clean checkout.
+5. **Production build:** the production build completes from a clean state in CI; the artifact that is imaged is this build output.
+6. **Readiness honesty:** the app reports *not ready* when PostgreSQL is unavailable and *ready* only when required dependencies respond; health output exposes no configuration values or secrets.
+7. **Image reproducibility & start:** two clean image builds from the same commit both produce an image that starts and serves health/readiness (any digest difference is explained in the Phase 1 report); the runtime process runs as non-root; production Compose references the image by digest.
+8. **Migrations controlled:** the minimal technical migration applies from an empty database and over the prior schema state using the same image; a deliberately failing migration halts the deploy path, leaves migration state uncorrupted (no partially recorded migrations), the previous app version still serves, and the documented forward-fix/restore procedure is executed successfully in a drill.
+9. **Repeatable workflows:** documented dev and test commands each pass twice in a row on a clean environment with identical results; tests run against an ephemeral database, never a persistent developer database.
+10. **Compose foundations:** Compose services define health checks; PostgreSQL and MinIO data survive `compose down`/up via named persistent volumes; database and MinIO ports are not published on a public interface.
+11. **Deployment parity:** the deployment documented in DEPLOYMENT-AND-BACKUP-PLAN is the workflow actually tested (same image, same migration step, rollback-by-digest demonstrated on a scratch stack) — no undocumented steps.
+12. **Scope discipline:** the Phase 1 tree contains no product features — no auth, profiles, events, communities, posts, messaging, notifications, product-domain entities/migrations, or product UI screens (a trivial framework placeholder route is not a product screen) — confirmed by exit diff review.
+13. **Docs match reality:** setup/ops docs, version matrices (ADR-0001/0003), the selected workflow (ADR-0018, with E-1 evidence), and PROJECT-STATUS reflect the tested state.
 
 ## Critical journeys (must all pass as e2e, both locales where applicable)
 J1 register · J2 OTP signup + onboarding · J3 join + post · J4 organizer create recurring event + cancel one occurrence · J5 DM within rules · J6 admin review + moderation (USER-FLOWS).
