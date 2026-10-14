@@ -33,7 +33,8 @@ Stable machine-readable codes; human messages localized, never leaking internals
 | 401 | `UNAUTHENTICATED`, `OTP_EXPIRED`, `OTP_INVALID`, `OTP_LOCKED` |
 | 403 | `FORBIDDEN`, `NOT_A_PARTICIPANT`, `CAPABILITY_REQUIRED`, `ACCOUNT_SUSPENDED` |
 | 404 | `NOT_FOUND` (also used to avoid resource enumeration where required) |
-| 409 | `ALREADY_REGISTERED`, `EVENT_FULL`, `INVALID_STATE_TRANSITION`, `CAPACITY_BELOW_REGISTRATIONS` |
+| 403 (cont.) | `MESSAGE_BLOCKED` (generic delivery failure shown to a blocked sender — must not confirm block status, DOMAIN-MODEL §12), `ORGANIZER_SUSPENDED`, `ACCOUNT_DELETION_PENDING` |
+| 409 | `ALREADY_REGISTERED`, `EVENT_FULL`, `INVALID_STATE_TRANSITION`, `CAPACITY_BELOW_REGISTRATIONS`, `REVISION_CONFLICT` (stale `revision` on occurrence/event edit — client must reload), `REGISTRATION_CLOSED` |
 | 429 | `RATE_LIMITED` (with `Retry-After`) |
 | 502/503 | `PROVIDER_UNAVAILABLE` (e.g. SMS send failed — never fake-success) |
 
@@ -52,4 +53,4 @@ Stable machine-readable codes; human messages localized, never leaking internals
 
 ## 7. Representative resource map (names only, Phase 4+ defines payloads)
 
-`/api/v1/auth/otp/request|verify`, `/auth/logout`, `/me`, `/me/profile`, `/me/interests`, `/me/privacy`, `/me/registrations`, `/events`, `/events/:id`, `/events/:id/occurrences`, `/occurrences/:id/registrations`, `/communities`, `/communities/:id/memberships`, `/posts`, `/comments`, `/reactions`, `/conversations`, `/messages`, `/notifications`, `/reports`, `/media/uploads`, `/admin/…`, `/organizer/…`. ICS: `/events/:id/occurrences/:occurrenceId.ics` (authenticated or signed-token policy decided in Phase 6 — Q-14).
+`/api/v1/auth/otp/request|verify`, `/auth/logout`, `/me`, `/me/profile`, `/me/interests`, `/me/privacy`, `/me/registrations`, `/events`, `/events/:id`, `/events/:id/occurrences`, `/occurrences/:id/registrations`, `/communities`, `/communities/:id/memberships`, `/posts`, `/comments`, `/reactions`, `/conversations`, `/messages`, `/notifications`, `/reports`, `/media/uploads`, `/admin/…`, `/organizer/…`. ICS: `/events/:id/occurrences/:occurrenceId.ics` (authenticated or signed-token policy decided in Phase 6 — D-14).

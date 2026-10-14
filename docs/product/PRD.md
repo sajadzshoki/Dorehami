@@ -73,8 +73,8 @@ Security baseline ([SECURITY-BASELINE](../security/SECURITY-BASELINE.md)); perfo
 
 ## 10. Success measures (Provisional — validate in Phase 1)
 
-Activation: % of new users selecting interests and completing a first registration/join within 7 days. Organizer supply: published events/week and % passing review first time. Retention proxy: repeat registrations and community joins. Instrumentation must be minimal and privacy-conscious; no heavy analytics in MVP (Open Q-11).
+Activation: % of new users selecting interests and completing a first registration/join within 7 days. Organizer supply: published events/week and % passing review first time. Retention proxy: repeat registrations and community joins. Instrumentation must be minimal and privacy-conscious; no heavy analytics in MVP (Open D-14).
 
 ## 11. Assumptions & open questions
 
-See [PROJECT-STATUS](../PROJECT-STATUS.md) — notably age policy/minimum age (Q-01), community Persian term (Q-07), initial launch city/categories (Q-08), and trust-level rules (Q-05). None of these block Phase 1 foundation work.
+See [PROJECT-STATUS](../PROJECT-STATUS.md) — notably age policy/minimum age (D-11), community Persian term (D-12), initial launch city/categories (D-09), and trust-level rules (D-04). None of these block Phase 1 foundation work.

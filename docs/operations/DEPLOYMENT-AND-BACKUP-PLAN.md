@@ -1,7 +1,7 @@
 # Deployment & Backup Plan — Dorehami (intended; nothing here is implemented in Phase 0)
 
 ## 1. Topology (per ADR-0018/0002)
-Single VPS, Docker Compose, official pinned images only, no custom Dockerfiles: reverse proxy (Phase 1 picks Caddy/Traefik/nginx official image) terminating HTTPS → Nuxt app (official Node image running the built output; app-delivery mechanism is ADR-0018's Phase 1 open point) → PostgreSQL + MinIO on a private Compose network with named volumes. DB/MinIO ports never published publicly; MinIO console disabled or bound to localhost/VPN only.
+Single VPS, Docker Compose, official images pinned by digest, no custom Dockerfiles, per ADR-0018 **Option A** (founder confirmation D-01 pending): CI builds the Nitro `.output`, assembles an OCI image with `crane append` onto the digest-pinned official Node 24 LTS image, and pushes it to the registry tagged by git SHA; production Compose pulls **by digest**. Fallback Option B (checksum-verified release tarball, bind-mounted read-only into the official Node image) applies only if the Phase 1 spike fails and that failure is recorded in ADR-0018. Reverse proxy (official Caddy recommended) terminates HTTPS → app → PostgreSQL + MinIO on a private Compose network with named volumes. DB/MinIO ports never published publicly; MinIO console disabled or bound to localhost/VPN only. Bind mounts are a dev-only mechanism and are forbidden for the production app artifact.
 
 ## 2. Environments & configuration
 Local dev (Compose, mock SMS allowed) · optional staging (same topology, fake data, real provider in sandbox/test mode if available) · production (real provider mandatory). All config via env (ENVIRONMENT-AND-SECRETS); startup validation gates deploys; health check endpoint (`/health`, no config values) wired to Compose healthchecks for app (after DB reachable), Postgres (`pg_isready`), MinIO readiness.
@@ -23,4 +23,4 @@ Pin image versions → run CI (tests + secret scan) → backup (§5) → run mig
 Monthly pinned-image patch review (security advisories for Node/PostgreSQL/MinIO/proxy), staged on staging first; OS unattended security updates on the VPS host; dependency audit in CI (ADR-0017 gates). No secrets in Git at any point (T-19 checks in CI and pre-deploy).
 
 ## 7. Monitoring (minimal, privacy-conscious)
-Uptime + health, error rate, OTP request/spend vs budget alert (T-13), disk/volume growth, backup success alerts. No third-party analytics on authenticated pages (Baseline §8).
+Uptime + health, error rate, OTP request/spend vs budget alert (T-13), disk/volume growth, backup success alerts. No third-party analytics on authenticated pages (Baseline §9).

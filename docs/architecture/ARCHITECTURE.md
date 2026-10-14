@@ -75,4 +75,4 @@ Ports: `SmsProvider` (send OTP), `PushProvider` (web-push dispatch), `EmailProvi
 
 ## 7. Deployment model (summary; detail in OPERATIONS)
 
-Docker Compose with official, pinned images (app image strategy without custom Dockerfiles is an explicit Phase 1 constraint to resolve — ADR-0018), persistent volumes for PostgreSQL and MinIO, reverse proxy with HTTPS, documented backup/restore. Environments: local dev, (optional) staging, production — same Compose topology.
+Docker Compose with official images pinned by digest. App-image strategy (Phase 0.1, ADR-0018): CI assembles a Dockerfile-less OCI image (`crane append` of the Nitro `.output` onto the official Node 24 image) referenced **by digest** in production; Option B (verified tarball + bind mount) is the documented fallback and Option C (custom Dockerfile) requires founder-approved supersession. Persistent volumes for PostgreSQL and MinIO, reverse proxy with HTTPS, documented backup/restore. Environments: local dev, (optional) staging, production — same Compose topology; bind mounts exist only in dev.

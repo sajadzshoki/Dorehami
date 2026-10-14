@@ -13,7 +13,7 @@ All documents and (future) code must use these terms. Do not introduce synonyms 
 | Organizer capability | قابلیت برگزارکنندگی | A capability granted to a user account, enabling event/community creation and an organizer page. Not a separate account or global role alone — see ADR-0006. |
 | Organizer page | صفحه برگزارکننده | Public page presenting an organizer's public events/communities. |
 | Organizer verification | احراز برگزارکننده | Trust process/level for organizers; affects publication review. |
-| Community | انجمن / اجتماع | A public group around shared interests that can host events and posts. (Persian UI copy to be validated — Open Q-07.) |
+| Community | انجمن / اجتماع | A public group around shared interests that can host events and posts. (Persian UI copy to be validated — Open D-12.) |
 | Membership | عضویت | A user's membership record in a community, with a membership role. |
 | Community manager | مدیر انجمن | A member with resource-scoped management rights over one community. |
 | Post / Comment / Reaction | پست / دیدگاه / واکنش | Basic community content and engagement. |
@@ -32,7 +32,7 @@ All documents and (future) code must use these terms. Do not introduce synonyms 
 | Session | نشست | A server-side authenticated session bound to a user and device context. |
 | Media asset | فایل رسانه‌ای | An uploaded file stored in MinIO, referenced by metadata in PostgreSQL. |
 | Publication review | بازبینی انتشار | Moderation/trust check applied before content becomes public, stricter for new/low-trust organizers. |
-| Trust level | سطح اعتماد | Derived organizer standing used to decide review requirements. Provisional concept — see Open Q-05. |
+| Trust level | سطح اعتماد | Derived organizer standing used to decide review requirements. Provisional concept — see Open D-04. |
 | Slug | نامک | Stable, URL-safe, language-aware identifier for public pages. |
 | PWA | وب‌اپ پیش‌رونده | Installable progressive web app behavior of the Nuxt frontend. |
 

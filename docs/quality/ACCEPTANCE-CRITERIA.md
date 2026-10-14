@@ -38,5 +38,16 @@ Measurable criteria verified in Phase 8 (many land with their feature phase). A 
 23. Backups: restore drill from a real backup reproduces data + media; missing-secret production boot fails with a clear message; secret scan of repo is clean.
 24. No fabricated data in production paths: with SMS unconfigured, OTP request returns an honest error (never success).
 
+## Phase 0.1 additions — packaging, authorization & event edge cases (AC-AUDIT)
+25. **Dockerfile-less packaging spike (Phase 1):** the ADR-0018 Option A pipeline builds `.output`, assembles the image on the digest-pinned official Node image, runs it via Compose, executes one migration with the same image, and rolls back by digest. No `Dockerfile` exists in the repo. If the spike fails, Option B is recorded in ADR-0018 instead — silently adding a Dockerfile fails this criterion.
+26. **Migration failure drill (Phase 1):** apply-from-empty, apply-over-previous, an induced mid-deploy migration failure (old app still serves, deploy halts), and restore-from-backup all demonstrated on a throwaway stack.
+27. **Permission matrix conformance:** every DOMAIN-MODEL §11 cell is covered by an automated test, including: community managers get no rights over a linked event they don't organize; admins cannot register on behalf of users or bulk-export attendees; organizers never receive phone numbers.
+28. **Attendee privacy:** anonymous responses contain counts only; `public` visibility still requires authentication; suspended users' existing sessions stop working immediately (test).
+29. **Material-change notifications:** rescheduling a registered occurrence (start/location/format) notifies every confirmed registrant with old→new values and preserves registrations; a series-rule edit never moves an occurrence that has registrations.
+30. **DST correctness:** recurrence expansion passes gap (nonexistent local time) and fold (ambiguous local time) tests in a DST-observing timezone, and Jalali/Gregorian rendering of the same instant agrees on ordering in both locales.
+31. **Suspension/deletion semantics:** organizer suspension blocks management without auto-cancelling events; community archival converts linked events to standalone under their organizer; account deletion releases the phone for re-registration only after anonymization completes.
+32. **Blocking (if D-05 approved):** a blocked user cannot initiate or send; the failure reveals nothing about the block; unblocking restores messaging; report remains available throughout.
+33. **Lost-update protection:** two concurrent organizer edits to one occurrence yield one success and one `REVISION_CONFLICT` — never a silent overwrite.
+
 ## Critical journeys (must all pass as e2e, both locales where applicable)
 J1 register · J2 OTP signup + onboarding · J3 join + post · J4 organizer create recurring event + cancel one occurrence · J5 DM within rules · J6 admin review + moderation (USER-FLOWS).

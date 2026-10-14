@@ -57,6 +57,6 @@ Online payments, paid tickets, refunds, financial settlements · waiting lists f
 ## 4. Assumptions recorded (not facts)
 
 - A-1: MVP events are free of charge (implied by payments exclusion). Validate before Phase 4 UI copy is finalized.
-- A-2: Initial launch is Iran-focused (fa-first, Kavenegar, Jalali) with English fully supported. Validate (Q-08).
+- A-2: Initial launch is Iran-focused (fa-first, Kavenegar, Jalali) with English fully supported. Validate (D-09).
 - A-3: Public communities only in MVP (private communities are not in the included list; membership of public communities may still be join-on-request if the founder chooses — see DOMAIN-MODEL §6, Provisional).
-- A-4: One community per event maximum (an event links to at most one community). Validate (Q-06).
+- A-4: One community per event maximum (an event links to at most one community). Default retained as a technical decision (PROJECT-STATUS §3); founder may revisit.

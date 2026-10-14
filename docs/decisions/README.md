@@ -4,10 +4,10 @@ Status key: **Proposed** = recommended, needs the validation stated in the ADR; 
 
 | ADR | Decision | Status |
 |---|---|---|
-| [0001](ADR-0001-nuxt-nitro-platform.md) | Nuxt 4 + Nitro application platform | Proposed |
+| [0001](ADR-0001-nuxt-nitro-platform.md) | Nuxt 4 + Nitro application platform | Proposed — registry evidence added Phase 0.1 |
 | [0002](ADR-0002-modular-monolith.md) | Modular monolith over microservices | Accepted (brief) |
-| [0003](ADR-0003-postgresql-drizzle.md) | PostgreSQL + Drizzle ORM | Proposed |
-| [0004](ADR-0004-migrations.md) | Versioned migrations via Drizzle Kit, forward-only in prod | Proposed |
+| [0003](ADR-0003-postgresql-drizzle.md) | PostgreSQL + Drizzle ORM | Proposed — evidence added Phase 0.1; PG 17/18 recommended, digest pinned in Phase 1 |
+| [0004](ADR-0004-migrations.md) | Versioned migrations via Drizzle Kit, forward-only in prod | Proposed — failure/recovery behavior specified Phase 0.1 |
 | [0005](ADR-0005-otp-auth-sessions.md) | Phone OTP auth + server-side sessions; optional password | Proposed (policy), Accepted (OTP-first per brief) |
 | [0006](ADR-0006-authorization-model.md) | Capability + resource-scoped authorization | Proposed |
 | [0007](ADR-0007-recurring-events.md) | Series + materialized occurrences | Proposed |

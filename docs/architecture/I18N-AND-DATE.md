@@ -4,10 +4,10 @@ Status: Phase 0 policy. Libraries named are **Provisional pending Phase 1 versio
 
 ## 1. Languages & routing
 
-- Locales: `fa` (Persian, RTL) and `en` (English, LTR). Default locale: `fa` (Provisional, A-2 — validate Q-08).
+- Locales: `fa` (Persian, RTL) and `en` (English, LTR). Default locale: `fa` (Provisional, A-2 — validate D-09).
 - **Shareable, language-aware routes:** every public page lives under `/fa/…` or `/en/…`; switching language navigates to the equivalent localized URL (redirect map for slugs, SEO §2). Non-prefixed URLs redirect to the negotiated default locale (cookie → Accept-Language → `fa`).
 - `<html lang dir>` set per locale on the server (no client-side flip flash); layouts use logical CSS properties (Tailwind `ms-/me-/ps-/pe-/start-/end-`) — layouts must never assume LTR.
-- Copy is authored natively per language (BRAND §3). Authored content (event descriptions etc.) is stored in the author's language and shown as-is in both locales — no machine translation in MVP (Q-13). UI chrome is fully translated; untranslated content is not hidden.
+- Copy is authored natively per language (BRAND §3). Authored content (event descriptions etc.) is stored in the author's language and shown as-is in both locales — no machine translation in MVP (D-08). UI chrome is fully translated; untranslated content is not hidden.
 
 ## 2. Dates, times, calendars
 
@@ -27,4 +27,4 @@ Language switcher is a real navigable control with `hreflang` equivalents; mixed
 
 ## 5. Open items
 
-Q-08 default language/launch market · Q-09 Persian typeface selection (Phase 2) · Q-13 slug-per-locale vs single slug (Phase 2/3) · calendar override UX (Phase 2).
+D-09 default language/launch market · D-12 Persian typeface selection (Phase 2) · D-08 slug-per-locale vs single slug (Phase 2/3) · calendar override UX (Phase 2).

@@ -11,7 +11,7 @@ Avatars, event covers, community images must be stored safely: no public buckets
 3. External S3/CDN from day one — cost/vendor dependency before need; adapter makes it possible later.
 
 ## Decision
-Option 1, accessed through the `media` module (S3 adapter port). Upload rules in SECURITY-BASELINE §5 (images only, content-sniffed, size cap, random keys, SVG excluded in MVP). Public SEO/OG images use the public derivative path only after publication. Media rows carry status so orphan cleanup and account-deletion flows can find files (ERD).
+Option 1, accessed through the `media` module (S3 adapter port). Upload rules in SECURITY-BASELINE §6 (images only, content-sniffed, size cap, random keys, SVG excluded in MVP). Public SEO/OG images use the public derivative path only after publication. Media rows carry status so orphan cleanup and account-deletion flows can find files (ERD).
 
 ## Consequences
 Bucket policies become part of the deployment checklist + a boot-time/deploy-time verification (anonymous listing denied test). Backup includes MinIO data (operations plan).

@@ -2,6 +2,8 @@
 
 PostgreSQL via Drizzle (ADR-0003/0004). Conventions: `id uuid PK` (or `bigint identity` where Phase 1 benchmarks prefer — decide once, Provisional: UUID v7/uuid), `created_at/updated_at timestamptz` (UTC) on mutable rows, enums as PG enums or check-constrained text (Phase 1 picks one consistently). This document is the schema *design*; no migrations exist in Phase 0.
 
+**Phase 0.1 corrections:** (1) `events.organizer_id` references **`organizer_profiles.user_id`**; (2) reactions/reports/media use explicit nullable FKs with exactly-one-target checks; (3) `user_blocks` added as **Proposed, contingent on founder approval D-05**; (4) occurrences gain `revision` (optimistic concurrency) and `individually_edited` (ADR-0007); (5) single stable ASCII slug per resource (D-08).
+
 ## 1. Diagram
 
 ```mermaid
@@ -19,32 +21,40 @@ erDiagram
   COMMUNITY_POST ||--o{ COMMENT : has
   USER ||--o{ COMMENT : authors
   USER ||--o{ REACTION : makes
-  COMMUNITY_POST ||--o{ REACTION : "target (polymorphic, see note)"
+  COMMUNITY_POST ||--o{ REACTION : "target post (nullable FK)"
+  COMMENT ||--o{ REACTION : "target comment (nullable FK)"
   EVENT ||--o| EVENT_SERIES : "recurs via"
   EVENT ||--o{ EVENT_OCCURRENCE : has
   EVENT_SERIES ||--o{ EVENT_OCCURRENCE : "generates"
   EVENT ||--o{ EVENT_CATEGORY : tagged
   CATEGORY ||--o{ EVENT_CATEGORY : tags
   COMMUNITY ||--o{ EVENT : "may host"
-  USER ||--o{ EVENT : "organizes (organizer_id)"
+  ORGANIZER_PROFILE ||--o{ EVENT : "organizes (organizer_id)"
   CITY ||--o{ EVENT : "located in"
   USER ||--o{ EVENT_REGISTRATION : makes
   EVENT_OCCURRENCE ||--o{ EVENT_REGISTRATION : "registered for"
   USER ||--o{ MEDIA_ASSET : uploads
-  EVENT ||--o{ MEDIA_ASSET : "cover/gallery (owner polymorphic)"
+  EVENT ||--o{ MEDIA_ASSET : "cover/gallery (nullable FK)"
+  COMMUNITY ||--o{ MEDIA_ASSET : "images (nullable FK)"
   USER ||--o{ NOTIFICATION : receives
   USER ||--o{ PUSH_SUBSCRIPTION : owns
   USER ||--o{ DIRECT_CONVERSATION : "participant A"
   DIRECT_CONVERSATION ||--o{ DIRECT_MESSAGE : contains
   USER ||--o{ DIRECT_MESSAGE : sends
   USER ||--o{ CONTENT_REPORT : files
+  COMMUNITY_POST ||--o{ CONTENT_REPORT : "reported (nullable FK)"
+  COMMENT ||--o{ CONTENT_REPORT : "reported (nullable FK)"
+  EVENT ||--o{ CONTENT_REPORT : "reported (nullable FK)"
+  USER ||--o{ CONTENT_REPORT : "reported user (nullable FK)"
   USER ||--o{ AUDIT_LOG : "acts in"
+  USER ||--o{ USER_BLOCK : "blocks (proposed, D-05)"
+  USER ||--o{ USER_BLOCK : "is blocked by (proposed)"
   CITY ||--o{ COMMUNITY : "based in (optional)"
   CATEGORY ||--o{ COMMUNITY_CATEGORY : tags
   COMMUNITY ||--o{ COMMUNITY_CATEGORY : tagged
 ```
 
-> Reaction/report/media targets: prefer explicit nullable FK columns (`post_id`, `comment_id`, …) with a check that exactly one is set, over unconstrained polymorphic strings. Phase 1 confirms per table.
+> Reaction/report/media targets: explicit nullable FK columns (`post_id`, `comment_id`, …) with a `CHECK` that exactly one target is set — unconstrained polymorphic strings are rejected (Phase 0.1). Media assets follow the same pattern (nullable `event_id`/`community_id`; avatars are referenced from `user_profiles.avatar_media_id`). `event_occurrences.series_id`, when present, must satisfy `series.event_id = occurrence.event_id` (composite FK or trigger — Phase 4 picks and tests it).
 
 ## 2. Entity detail
 
@@ -71,9 +81,9 @@ Legend — PD: personal-data class (P0 public-by-design, P1 user-controlled, P2 
 ### Events
 | Entity | Key fields | Constraints / indexes | States | Del / PD |
 |---|---|---|---|---|
-| `events` | id, organizer_id FK, community_id FK nullable, title, description, format, city_id nullable, venue_text, online_url (protected), capacity_default, publication_status, locale of content, slug | index(organizer_id), index(community_id), index(publication_status, created_at); slug unique per locale (Q-13) | see DOMAIN-MODEL §3 | S / P0–P1 |
+| `events` | id, organizer_id FK → `organizer_profiles(user_id)`, community_id FK nullable, title, description, format, city_id nullable, venue_text, online_url (protected), capacity_default, publication_status, content_locale, slug (single stable ASCII slug) | index(organizer_id), index(community_id), index(publication_status, created_at); unique(slug) | see DOMAIN-MODEL §3 | S / P0–P1 |
 | `event_series` | id, event_id unique FK, recurrence_rule (jsonb, validated), timezone (IANA), series_end_at | — | `active → ended/cancelled` | S / P0 |
-| `event_occurrences` | id, event_id FK, series_id FK nullable, starts_at, ends_at, capacity, registered_count, status | **unique(event_id, starts_at)**; index(starts_at) where status='scheduled'; index(event_id) | `scheduled → cancelled` | S / P0 |
+| `event_occurrences` | id, event_id FK, series_id FK nullable (must match series.event_id), starts_at, ends_at, capacity, registered_count, status, revision (int), individually_edited (bool) | **unique(event_id, starts_at)**; index(starts_at) where status='scheduled'; index(event_id) | `scheduled → cancelled` | S / P0 |
 | `event_categories` | event_id, category_id | PK(event_id, category_id) | — | H / P0 |
 | `event_registrations` | id, occurrence_id FK, user_id FK, status, registered_at, cancelled_at | **unique(occurrence_id, user_id) where status='confirmed'** (partial unique index); index(user_id, status) | `confirmed → cancelled_by_user/cancelled_by_event` | S / P1 |
 
@@ -96,8 +106,9 @@ Concurrency: registration runs in one transaction locking the occurrence row (or
 | `direct_messages` | id, conversation_id, sender_id, body, read_at | index(conversation_id, created_at) | S / P2 |
 | `notifications` | id, user_id, type, payload (jsonb, minimal, no message bodies), read_at, link_path (internal validated) | index(user_id, read_at, created_at desc) | H after read window / P1 |
 | `push_subscriptions` | id, user_id, endpoint (unique), keys, revoked_at | unique(endpoint) | H / P2 |
-| `content_reports` | id, reporter_id, target type+ids, reason, details, status, handled_by | index(status, created_at) | S (retention Q-12) / P2 |
-| `media_assets` | id, uploader_id, bucket, object_key (unique), mime_type, size_bytes, width/height, status | unique(object_key) | S→H after orphan sweep / P1 |
+| `content_reports` | id, reporter_id, target type+ids, reason, details, status, handled_by | index(status, created_at) | S (retention D-06) / P2 |
+| `media_assets` | id, uploader_id, bucket, object_key (unique), mime_type, size_bytes, width/height, status, event_id nullable FK, community_id nullable FK (≤1 owner set) | unique(object_key); index(event_id), index(community_id) | S→H after orphan sweep / P1 |
+| `user_blocks` **(Proposed, D-05)** | id, blocker_id FK, blocked_id FK, created_at | **unique(blocker_id, blocked_id)**; check(blocker_id <> blocked_id); index(blocked_id) | H on unblock / P2 |
 | `audit_logs` | id, actor_user_id, action, target_type, target_id, metadata (jsonb, minimal), ip, created_at | index(actor), index(target_type,target_id), index(created_at); **append-only** | never deleted in MVP / P2 |
 | `system_settings` | key PK, value jsonb, updated_by | — | Only if genuinely needed (Provisional: feature flags like `push_enabled`, review thresholds). No secrets here — secrets live in env. / P0 |
 

@@ -17,7 +17,11 @@ Server-side authorization on every protected operation (frontend hiding is never
 
 Server-side sessions; token = ≥256-bit random, stored hashed; cookie `HttpOnly; Secure; SameSite=Lax` (evaluate Strict in Phase 3), path-scoped; rotation on login and capability/role change; idle timeout Provisional 30 days sliding with 90-day absolute for users, shorter for admins (12h idle, Provisional); logout revokes server-side; settings page lists sessions with revoke (Provisional MVP inclusion — recommended).
 
-## 4. Authorization
+## 4. Authorization, suspension & blocking
+
+Account suspension (admin, audited): revokes all sessions, blocks login (`ACCOUNT_SUSPENDED`), cancels future registrations with organizer-visible count updates, and blocks event creation/management while the organizer capability is suspended — but never auto-cancels the organizer's events (DOMAIN-MODEL §10; an explicit audited admin choice does). Blocking (if founder approves D-05): enforced server-side at conversation-initiation and message-send, gives the blocked party no confirmation signal, and is covered by two-user tests like every other authorization rule.
+
+## 5. Permissions
 
 Capability/resource model per ADR-0006: platform admin (platform scope) · organizer capability (own resources) · community manager (that community) · member (membership-scoped) · participant (conversation/registration-scoped). Every handler re-checks against the loaded resource; two-user BOLA tests per endpoint are merge-blocking.
 
@@ -27,7 +31,7 @@ Schema validation on all inputs; parameterized queries only; user content plain-
 
 ## 6. Rate limiting & abuse
 
-Global + per-route limits (auth, OTP, search, upload, messaging, reports); `429` + `Retry-After`; limits configurable via env, documented in ENVIRONMENT-AND-SECRETS. CAPTCHA only as an escalation after thresholds, privacy-reviewed (Q-15).
+Global + per-route limits (auth, OTP, search, upload, messaging, reports); `429` + `Retry-After`; limits configurable via env, documented in ENVIRONMENT-AND-SECRETS. CAPTCHA only as an escalation after thresholds, privacy-reviewed (D-14).
 
 ## 7. Secrets & configuration
 

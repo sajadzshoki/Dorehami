@@ -37,7 +37,7 @@ Initial color palette (provisional brand tokens):
 | `surface.background` (warm) | `#F7F4ED` | Light-theme app background. |
 | `text.primary` | `#252925` | Primary text on light surfaces. |
 
-Dark-theme counterparts are **not yet defined** (Open Q-09): they must be derived and contrast-checked (WCAG 2.2 AA) in Phase 2, not invented here. Typography is also open (Q-09): a Persian-capable font with Latin support must be selected and licensed in Phase 2 (self-hosted for performance/privacy, Provisional).
+Dark-theme counterparts are **not yet defined** (Open D-12): they must be derived and contrast-checked (WCAG 2.2 AA) in Phase 2, not invented here. Typography is also open (D-12): a Persian-capable font with Latin support must be selected and licensed in Phase 2 (self-hosted for performance/privacy, Provisional).
 
 ## 5. Configurable identity (Confirmed requirement — ADR-0019)
 
